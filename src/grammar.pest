@@ -1,0 +1,16 @@
+//! parses ini files (note that there's no formal ini spec so this is best effort to address what's out there)
+
+file = _{ SOI ~ k_v_pair* ~ section* ~ EOI }
+
+section        = { section_header ~ k_v_pair* }
+section_header = _{ "[" ~ word+ ~ "]" }
+
+k_v_pair = { word ~ ("=" | ":") ~ word? }
+
+word           = @{ escaped_word | unescaped_word }
+escaped_word   =  { QUOTATION_MARK ~ char+ ~ QUOTATION_MARK }
+unescaped_word =  { char+ }
+char           =  { LETTER | "." | "_" | "/" | "*" | "-" | ":" | "/" | "~" | "@" | NUMBER }
+
+WHITESPACE = _{ WHITE_SPACE }
+COMMENT    = _{ "#" ~ ANY* }
